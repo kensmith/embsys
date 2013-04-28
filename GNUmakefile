@@ -13,7 +13,8 @@ deps := $(patsubst %.o,%.d,$(objs))
 
 .PHONY:\
 all\
-clean
+clean\
+flash
 
 all\
 :build/app.bin build/app.lst
@@ -22,17 +23,22 @@ clean\
 :\
 ;rm -Rf build
 
-make-list-name =\
-$(strip\
-  $(dir $(1))$(patsubst %.o,%.lst,$(notdir $(1)))\
- )
-
 hide =\
 $(strip\
   $(if $(strip $(show)),\
     $(comment do nothing),\
     @echo $1 $(notdir $2) $(notdir $3);\
    )\
+ )
+
+flash\
+:build/app.bin flash.py\
+;$(call hide,flsh,$<)\
+./flash.py $<
+
+make-list-name =\
+$(strip\
+  $(dir $(1))$(patsubst %.o,%.lst,$(notdir $(1)))\
  )
 
 assemble =\
@@ -79,6 +85,7 @@ $(strip\
   -Wall\
   -fverbose-asm\
   -fno-exceptions\
+  -fno-rtti\
   -Wa,-amhls=$(call make-list-name,$2)\
   -I inc\
   -MMD\
