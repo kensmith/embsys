@@ -76,6 +76,7 @@ compile-c++ =\
 $(strip\
   $(call hide,comp,$1,$2)\
   $(toolchain)-g++\
+  -std=c++11\
   -c\
   $(debug)\
   $(opt)\

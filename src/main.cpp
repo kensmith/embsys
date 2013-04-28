@@ -32,14 +32,12 @@
 ****************************************************************************/
 #define __MAIN_C__
 
-extern "C" {
 //#include <stdio.h>
 #include <stdint.h>
 #include "lpc2378.h"
 #include "init.h"
 #include "print.h"
 //#include "uarts.h"
-}
 
 /*=========================================================================*/
 /*  DEFINE: All Structures and Common Constants                            */
@@ -90,6 +88,38 @@ extern "C" {
  *  This routine never terminates...
  *
  */
+
+enum led_states_t
+{
+   on,
+   off
+};
+
+void led(led_states_t state)
+{
+   switch (state)
+   {
+      case led_states_t::on:
+         break;
+      case led_states_t::off:
+         break;
+   }
+}
+
+void led_classic(led_states_t state)
+{
+   switch (state)
+   {
+      case led_states_t::on:
+         VOLATILE32(FIO0SET) |= 1<<21;
+         break;
+      case led_states_t::off:
+         VOLATILE32(FIO0CLR) |= 1<<21;
+         break;
+   }
+}
+
+
 int main(void)
 {
 	uint32_t p;
@@ -106,7 +136,7 @@ int main(void)
     while (1)
     {
         /* Turn MCIPWR SD LED On */
-        VOLATILE32(FIO0SET) |= 1<<21;
+        led_classic(led_states_t::on);
         
         printString("University of Washington - UART Test Application \n");
         for (p = 0; p < 0x100000; p++ );        // wait
@@ -116,7 +146,7 @@ int main(void)
         //  printString(string);
         
         /* Turn MCIPWR SD LED Off */
-        VOLATILE32(FIO0CLR) |= 1<<21;
+        led_classic(led_states_t::off);
         for (p = 0; p < 0x100000; p++ );        // wait
     }
     /* never terminates, but put this here to make compiler happy ... */
