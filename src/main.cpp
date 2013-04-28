@@ -34,7 +34,7 @@
 
 //#include <stdio.h>
 #include <stdint.h>
-#include "lpc2378.h"
+#include "lpc2378.hpp"
 #include "init.h"
 #include "print.h"
 //#include "uarts.h"
@@ -100,29 +100,17 @@ void led(led_states_t state)
    switch (state)
    {
       case led_states_t::on:
+         fio::set::led1::write(1);
          break;
       case led_states_t::off:
+         fio::clr::led1::write(1);
          break;
    }
 }
-
-void led_classic(led_states_t state)
-{
-   switch (state)
-   {
-      case led_states_t::on:
-         VOLATILE32(FIO0SET) |= 1<<21;
-         break;
-      case led_states_t::off:
-         VOLATILE32(FIO0CLR) |= 1<<21;
-         break;
-   }
-}
-
 
 int main(void)
 {
-	uint32_t p;
+	volatile uint32_t p;
 	
     /* initialize */
     initHardware();
@@ -136,7 +124,7 @@ int main(void)
     while (1)
     {
         /* Turn MCIPWR SD LED On */
-        led_classic(led_states_t::on);
+        led(led_states_t::on);
         
         printString("University of Washington - UART Test Application \n");
         for (p = 0; p < 0x100000; p++ );        // wait
@@ -146,7 +134,7 @@ int main(void)
         //  printString(string);
         
         /* Turn MCIPWR SD LED Off */
-        led_classic(led_states_t::off);
+        led(led_states_t::off);
         for (p = 0; p < 0x100000; p++ );        // wait
     }
     /* never terminates, but put this here to make compiler happy ... */

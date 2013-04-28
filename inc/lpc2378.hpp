@@ -161,7 +161,7 @@ struct uart0
       enum rate_t
       {
          // TODO question CCLK as peripheral clock source
-         value = 16 * CCLK / rate,
+         value = 288000000 / rate * 16,
       };
 
       static_assert(0 <= rate_t::value && rate_t::value <= 65535,
@@ -196,4 +196,27 @@ struct uart0
    {
       typedef reg_t<0xe000c014, 0x1, 5, ro_t> thre;
    };
+};
+
+struct fio
+{
+   struct dir
+   {
+      typedef reg_t<0x3fffc000, 1, 21, rw_t> led1;
+   };
+
+   struct clr
+   {
+      typedef reg_t<0x3fffc01c, 1, 21, wo_t> led1;
+   };
+
+   struct set
+   {
+      typedef reg_t<0x3fffc018, 1, 21, wo_t> led1;
+   };
+};
+
+struct memmap
+{
+   typedef reg_t<0xe01fc040, 2, 0, rw_t> map;
 };

@@ -69,7 +69,6 @@
  */
 
 #include <stdint.h>
-#include "lpc2378.h"
 #include "lpc2378.hpp"
 #include "init.h"
 
@@ -143,8 +142,10 @@ static void initPLL(void)
     *      M = 12, N = 1, F_in = 12.000 MHz -> F_cco = 288.000 MHz
     *
     */
-   pll::cfg::msel::write(PLLCFG_M - 1);
-   pll::cfg::nsel::write(PLLCFG_N - 1);
+   static const int M = 12;
+   static const int N = 1;
+   pll::cfg::msel::write(M - 1);
+   pll::cfg::nsel::write(N - 1);
    pll::feed::pllfeed::write(0xaa);
    pll::feed::pllfeed::write(0x55);
     
@@ -154,15 +155,15 @@ static void initPLL(void)
    pll::feed::pllfeed::write(0x55);
     
    /* Divide F_cco down to get the CCLK output. (288 / 6 = 48) */
-   cclkcfg::cclksel::write(CCLKCFG_VALUE);
+   cclkcfg::cclksel::write(6);
     
    /* Wait for the PLL to lock to set frequency */
     
    do {} while (pll::stat::plock::read() == 0);
    do {} while (
-      pll::stat::msel::read() != PLLCFG_M - 1
+      pll::stat::msel::read() != M - 1
          &&
-      pll::stat::nsel::read() != PLLCFG_N - 1
+      pll::stat::nsel::read() != N - 1
    );
     
    /* Enable and connect the PLL as the clock source */
@@ -276,51 +277,6 @@ static void initGPIO(void)
 /*
  * NAME:
  *
- *  initUART0
- *
- * DESCRIPTION:
- *
- *  sets up UART0 to be 38.4 K Baud, 8 data bits, no parity, and no
- *  flow control
- *
- * PARAMETERS:
- *
- *  none...
- *
- * RETURN:
- *
- *  none...
- *
- * EXAMPLE:
- *
- *   initUART0();
- *
- * NOTES:
- *
- *  experimental
- *
- */
-
-void initUART0(uint16_t baud, uint8_t mode, uint8_t fmode)
-{
-    // TODO figure this out
-#if 0
-    VOLATILE8(U0LCR) = ULCR_DLAB_ENABLE;
-    VOLATILE8(U0DLL) = (uint8_t) baud;
-    VOLATILE8(U0DLM) = (uint8_t)(baud >> 8);
-    VOLATILE8(U0LCR) = (mode & ~ULCR_DLAB_ENABLE);
-    VOLATILE8(U0FCR) = fmode;
-#else
-    (void) baud;
-    uart0::bps<115200>();
-    uart0::fcr::fifo_enable::write(0);
-    //uart0::dll::dllsb::write(
-#endif
-}
-
-/*
- * NAME:
- *
  *  initHardware
  *
  * DESCRIPTION:
@@ -357,11 +313,12 @@ void initHardware(void)
     initGPIO();
     
     /* intialize specific hardware components for UART0 */
-    initUART0(UART_BAUD(HOST_BAUD_U0),UART_8N1,UART_FIFO_OFF);
+    uart0::bps<115200>();
+    uart0::fcr::fifo_enable::write(0);
     
     /* Turn off MCIPWR SD LED (near bottom left corner of LCD) */
-    VOLATILE32(LED1_DIR) |= LED1_BIT;
-    VOLATILE32(LED1_CLR)  = LED1_BIT;
+    fio::dir::led1::write(1);
+    fio::clr::led1::write(1);
     
     /* MEMMAP Choices are:
     BOOTLOADERMODE      0x00
@@ -369,7 +326,7 @@ void initHardware(void)
     USERRAMMODE         0x02
     EXTERNALMEMORYMODE  0x03
     */
-    VOLATILE32(MEMMAP) = USERRAMMODE;
+    memmap::map::write(1);
 }
 
 /*

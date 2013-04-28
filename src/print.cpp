@@ -23,7 +23,6 @@
 //#include <stdio.h>
 #include <stdint.h>
 #include "print.h"
-#include "lpc2378.h"
 #include "lpc2378.hpp"
 
 
@@ -43,6 +42,7 @@
 /*  DEFINE: Definition of all local Procedures                             */
 /*=========================================================================*/
 
+#if 0
 /*=========================================================================*/
 /*  DEFINE: All code exported                                              */
 /*=========================================================================*/
@@ -82,7 +82,7 @@ void print_uint32(uint32_t u)
 
     printString(p);
 }
-
+#endif
 
 /*
  * NAME
@@ -109,23 +109,6 @@ void print_uint32(uint32_t u)
 
 void printString(const char *ptr)
 {
-#if 0
-    if (ptr==0 || *ptr==0) return;
-
-    do
-    {
-      if (*ptr=='\n')
-      {
-      PUTC(*ptr++);
-      PUTC('\r');
-      }
-      else
-      {
-      PUTC(*ptr++);
-      }
-    }
-    while (*ptr!=0);
-#else
    if (!ptr) return;
 
    while (*ptr)
@@ -137,6 +120,5 @@ void printString(const char *ptr)
       uart0::thr::byte::write(static_cast<uint8_t>(*ptr));
       ++ptr;
    }
-#endif
 }
 /*** EOF ***/
