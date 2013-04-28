@@ -32,7 +32,7 @@ $(strip\
  )
 
 flash\
-:build/app.bin\
+:all\
 ;$(call hide,flsh,app)\
 ./flash.py build/app.bin
 
