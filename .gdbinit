@@ -1,9 +1,9 @@
 target remote localhost:3333
-symbol-file LPC2378HelloW.elf
+symbol-file build/app.elf
 monitor poll on
 
 define syms
-    symbol-file LPC2378HelloW.elf
+    symbol-file build/app.elf
 end
 
 define flash
@@ -12,11 +12,11 @@ define flash
     #monitor halt
     monitor reset halt
     #monitor adapter_khz 333
-    #monitor flash write_image LPC2378HelloW.elf
-    monitor flash write_image erase unlock LPC2378HelloW.bin 0x0 bin
-    #monitor flash write_image LPC2378HelloW.bin 0x0 bin
-    #monitor verify_image LPC2378HelloW.bin 0x0 bin
-    symbol-file LPC2378HelloW.elf
+    #monitor flash write_image build/app.elf
+    monitor flash write_image erase unlock build/app.bin 0x0 bin
+    #monitor flash write_image build/app.bin 0x0 bin
+    #monitor verify_image build/app.bin 0x0 bin
+    symbol-file build/app.elf
     monitor reset init
     #monitor adapter_khz 6000
 end
@@ -31,5 +31,5 @@ define flashboot
 end
 
 document flash
-flash: write LPC2378HelloW.elf and reset the processor
+flash: write build/app.elf and reset the processor
 end

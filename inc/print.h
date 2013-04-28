@@ -3,7 +3,7 @@
 
 void printHex(uint32_t u32);
 void print_uint32(uint32_t u);
-void printString(char *ptr);
+void printString(const char *ptr);
 
 
 #endif /* __PRINT_H__ */

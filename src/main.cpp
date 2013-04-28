@@ -32,13 +32,14 @@
 ****************************************************************************/
 #define __MAIN_C__
 
+extern "C" {
 //#include <stdio.h>
 #include <stdint.h>
 #include "lpc2378.h"
 #include "init.h"
 #include "print.h"
 //#include "uarts.h"
-
+}
 
 /*=========================================================================*/
 /*  DEFINE: All Structures and Common Constants                            */

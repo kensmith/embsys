@@ -8,21 +8,36 @@ $(foreach extn,$(extns),\
   $(eval $(extn)-objs := $$(patsubst src/%,build/%,$$($(extn)-objs)))\
   $(eval objs += $($(extn)-objs))\
  )
+#$(info objs="$(objs)")
 deps := $(patsubst %.o,%.d,$(objs))
 
 .PHONY:\
-all
+all\
+clean
 
 all\
 :build/app.bin build/app.lst
+
+clean\
+:\
+;rm -Rf build
 
 make-list-name =\
 $(strip\
   $(dir $(1))$(patsubst %.o,%.lst,$(notdir $(1)))\
  )
 
+hide =\
+$(strip\
+  $(if $(strip $(show)),\
+    $(comment do nothing),\
+    @echo $1 $(notdir $2) $(notdir $3);\
+   )\
+ )
+
 assemble =\
 $(strip\
+  $(call hide,assm,$1,$2)\
   $(toolchain)-as\
   $(debug)\
   -amhls=$(call make-list-name,$2)\
@@ -32,6 +47,7 @@ $(strip\
 
 compile-c =\
 $(strip\
+  $(call hide,comp,$1,$2)\
   $(toolchain)-gcc\
   -c\
   $(debug)\
@@ -47,12 +63,12 @@ $(strip\
   -MMD\
   -o $2\
   $1\
-  ;\
   $(call postdep,$2)\
  )
 
 compile-c++ =\
 $(strip\
+  $(call hide,comp,$1,$2)\
   $(toolchain)-g++\
   -c\
   $(debug)\
@@ -61,32 +77,35 @@ $(strip\
   -mthumb-interwork\
   -fomit-frame-pointer\
   -Wall\
-  -Wstrict-prototypes\
   -fverbose-asm\
+  -fno-exceptions\
   -Wa,-amhls=$(call make-list-name,$2)\
   -I inc\
   -MMD\
   -o $2\
   $1\
-  ;\
   $(call postdep,$2)\
  )
 
 postdep =\
 $(strip\
   $(eval depname := $(1:.o=.d))\
-  sed\
+  $(eval tmpname := $(1:.o=.d.in))\
+  && cp -f $(depname) $(tmpname)\
+  && sed\
    -e 's/\#.*//'\
    -e 's/^[^:]*: *//'\
    -e 's/ *\\$$//'\
    -e '/^$$/ d'\
    -e 's/$$/ :/'\
-   < $(depname)\
-   >> $(depname)\
+   < $(tmpname)\
+   > $(depname)\
+  && rm -f $(tmpname)\
  )
 
 link =\
 $(strip\
+  $(call hide,link,$1,$2)\
   $(toolchain)-g++\
   -mcpu=arm7tdmi\
   -nostartfiles\
@@ -98,6 +117,7 @@ $(strip\
 
 make-hex =\
 $(strip\
+  $(call hide,copy,$1,$2)\
   $(toolchain)-objcopy\
   -O ihex\
   -S $1\
@@ -105,6 +125,7 @@ $(strip\
  )
 make-bin =\
 $(strip\
+  $(call hide,copy,$1,$2)\
   $(toolchain)-objcopy\
   -O binary\
   -S $1\
@@ -113,6 +134,7 @@ $(strip\
 
 make-lst =\
 $(strip\
+  $(call hide,copy,$1,$2)\
   $(toolchain)-objdump\
   -dSst $1\
   > $2\
@@ -151,10 +173,6 @@ build/app.bin\
 build/app.lst\
 :build/app.elf\
 ;$(call make-lst,$<,$@)
-
-build/postdep.sh\
-:$(MAKEFILE_LIST)\
-;
 
 build\
 :\
