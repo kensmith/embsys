@@ -129,3 +129,70 @@ struct pclk
       typedef reg_t<0xe01fc1ac, 0x3, 28, rw_t> pclk_syscon;
    };
 };
+
+struct uart0
+{
+   struct lcr
+   {
+      typedef reg_t<0xe000c00c, 0x3, 0, rw_t> word_length_select;
+      typedef reg_t<0xe000c00c, 0x1, 2, rw_t> stop_bit_select;
+      typedef reg_t<0xe000c00c, 0x1, 3, rw_t> parity_enable;
+      typedef reg_t<0xe000c00c, 0x3, 4, rw_t> parity_select;
+      typedef reg_t<0xe000c00c, 0x1, 6, rw_t> break_control;
+      typedef reg_t<0xe000c00c, 0x1, 7, rw_t> divisor_latch_access_bit;
+   };
+
+   struct dll
+   {
+      typedef reg_t<0xe000c000, 0xff, 0, rw_t> dllsb;
+   };
+
+   struct dlm
+   {
+      typedef reg_t<0xe000c004, 0xff, 0, rw_t> dlmsb;
+   };
+
+   template <int rate>
+   static void bps()
+   {
+      static_assert(rate == 2400 || rate == 38400 || rate == 115200,
+         "unsupported baud rate");
+
+      enum rate_t
+      {
+         value = 16 * CCLK / rate,
+      };
+
+      static_assert(0 <= rate_t::value && rate_t::value <= 65535,
+         "dll value out of range");
+
+      enum dll_t
+      {
+         lsb = rate_t::value & 0xff,
+         msb = (rate_t::value >> 8) & 0xff
+      };
+
+      uart0::lcr::divisor_latch_access_bit::write(1);
+      uart0::dll::dllsb::write(dll_t::lsb);
+      uart0::dlm::dlmsb::write(dll_t::msb);
+      uart0::lcr::divisor_latch_access_bit::write(0);
+   }
+
+   struct fcr
+   {
+      typedef reg_t<0xe000c008, 1, 0, rw_t> fifo_enable;
+      typedef reg_t<0xe000c008, 1, 1, rw_t> rx_fifo_reset;
+      typedef reg_t<0xe000c008, 1, 2, rw_t> tx_fifo_reset;
+      typedef reg_t<0xe000c008, 0x3, 6, rw_t> rx_trigger_level;
+   };
+
+   struct thr
+   {
+      typedef reg_t<0xe000c000, 0xff, 0, wo_t> byte;
+   };
+
+   struct lsr
+   {
+      typedef reg_t<0xe000c014, 0x1, 5, ro_t> thre;
+   };
+};

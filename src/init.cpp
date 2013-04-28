@@ -241,40 +241,6 @@ static void initPCLK(void)
 /*
  * NAME:
  *
- *  pinConfigurator
- *
- * DESCRIPTION:
- *
- *  setups all the pins of the LPC2378
- *
- * PARAMETERS:
- *
- *  none...
- *
- * RETURN:
- *
- *  none...
- *
- * EXAMPLE:
- *
- *   pinConfigurator();
- *
- * NOTES:
- *
- *  experimental
- *
- */
-
-void pinConfigurator(void)
-{
-    pinsel<0>::port<2>::function::write(1);
-    pinsel<0>::port<3>::function::write(1);
-    pinsel<10>::port<1>::function::write(0);
-}
-
-/*
- * NAME:
- *
  *  initGPIO
  *
  * DESCRIPTION:
@@ -301,7 +267,9 @@ void pinConfigurator(void)
 
 static void initGPIO(void)
 {
-    pinConfigurator();
+    pinsel<0>::port<2>::function::write(1);
+    pinsel<0>::port<3>::function::write(1);
+    pinsel<10>::port<1>::function::write(0);
     scs::gpiom::write(1);
 }
 
@@ -335,11 +303,19 @@ static void initGPIO(void)
 
 void initUART0(uint16_t baud, uint8_t mode, uint8_t fmode)
 {
+    // TODO figure this out
+#if 0
     VOLATILE8(U0LCR) = ULCR_DLAB_ENABLE;
     VOLATILE8(U0DLL) = (uint8_t) baud;
     VOLATILE8(U0DLM) = (uint8_t)(baud >> 8);
     VOLATILE8(U0LCR) = (mode & ~ULCR_DLAB_ENABLE);
     VOLATILE8(U0FCR) = fmode;
+#else
+    (void) baud;
+    uart0::bps<115200>();
+    uart0::fcr::fifo_enable::write(0);
+    //uart0::dll::dllsb::write(
+#endif
 }
 
 /*

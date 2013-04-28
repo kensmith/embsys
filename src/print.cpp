@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "print.h"
 #include "lpc2378.h"
+#include "lpc2378.hpp"
 
 
 /*=========================================================================*/
@@ -108,6 +109,7 @@ void print_uint32(uint32_t u)
 
 void printString(const char *ptr)
 {
+#if 0
     if (ptr==0 || *ptr==0) return;
 
     do
@@ -123,5 +125,18 @@ void printString(const char *ptr)
       }
     }
     while (*ptr!=0);
+#else
+   if (!ptr) return;
+
+   while (*ptr)
+   {
+      while (!uart0::lsr::thre::read())
+      {
+         // chill
+      }
+      uart0::thr::byte::write(static_cast<uint8_t>(*ptr));
+      ++ptr;
+   }
+#endif
 }
 /*** EOF ***/
