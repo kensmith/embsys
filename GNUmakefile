@@ -32,9 +32,9 @@ $(strip\
  )
 
 flash\
-:build/app.bin flash.py\
-;$(call hide,flsh,$<)\
-./flash.py $<
+:build/app.bin\
+;$(call hide,flsh,app)\
+./flash.py build/app.bin
 
 make-list-name =\
 $(strip\
@@ -106,7 +106,7 @@ $(strip\
    -e '/^$$/ d'\
    -e 's/$$/ :/'\
    < $(tmpname)\
-   > $(depname)\
+   >> $(depname)\
   && rm -f $(tmpname)\
  )
 
