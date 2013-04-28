@@ -1,0 +1,79 @@
+#pragma once
+
+#include "reg_t.hpp"
+#include "wo_t.hpp"
+#include "ro_t.hpp"
+#include "rw_t.hpp"
+
+// TODO use a mask_t type to generate masks internally from
+// a specified number of bits
+// TODO templatized template aliases instead of template
+// structs?
+// TODO or using statements instead of templates?
+
+template <int which>
+struct pinsel
+{
+   static_assert(0 <= which && which <= 10, "pin select out of range");
+
+   template <int name>
+   struct port
+   {
+      static_assert(0 <= name && name <= 15, "pin name out of range");
+      static_assert(which != 0 || !(12 <= name && name <= 14), "reserved pinsel0 names");
+
+      typedef reg_t<0xe002c000 + which*4, 0x3, name*2, rw_t> function;
+   };
+};
+
+struct scs
+{
+   typedef reg_t<0xe01fc1a0, 1, 0, rw_t> gpiom;
+   typedef reg_t<0xe01fc1a0, 1, 1, rw_t> emc_reset_disable;
+   typedef reg_t<0xe01fc1a0, 1, 2, rw_t> emc_burst_control;
+
+   typedef reg_t<0xe01fc1a0, 1, 3, rw_t> mcipwr_active_level;;
+   typedef reg_t<0xe01fc1a0, 1, 4, rw_t> oscrange;
+   typedef reg_t<0xe01fc1a0, 1, 5, rw_t> oscen;
+   typedef reg_t<0xe01fc1a0, 1, 6, ro_t> oscstat; // note ro_t
+};
+
+struct pll
+{
+   struct stat
+   {
+      typedef reg_t<0xe01fc088, 0x3fff, 0, ro_t> msel;
+      typedef reg_t<0xe01fc088, 0xff, 16, ro_t> nsel;
+      typedef reg_t<0xe01fc088, 1, 24, ro_t> plle;
+      typedef reg_t<0xe01fc088, 1, 25, ro_t> pllc;
+      typedef reg_t<0xe01fc088, 1, 26, ro_t> plock;
+   };
+
+   struct con
+   {
+      typedef reg_t<0xe01fc080, 1, 0, rw_t> plle;
+      typedef reg_t<0xe01fc080, 1, 1, rw_t> pllc;
+      typedef reg_t<0xe01fc080, 0x3, 0, rw_t> both;
+   };
+
+   struct feed
+   {
+      typedef reg_t<0xe01fc08c, 0xff, 0, wo_t> pllfeed;
+   };
+
+   struct cfg
+   {
+      typedef reg_t<0xe01fc084, 0x3fff, 0, rw_t> msel;
+      typedef reg_t<0xe01fc084, 0xff, 16, rw_t> nsel;
+   };
+};
+
+struct clksrcsel
+{
+   typedef reg_t<0xe01fc10c, 0x3, 0, rw_t> clksrc;
+};
+
+struct cclkcfg
+{
+   typedef reg_t<0xe01fc104, 0xff, 0, rw_t> cclksel;
+};

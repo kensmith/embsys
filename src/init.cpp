@@ -70,7 +70,7 @@
 
 #include <stdint.h>
 #include "lpc2378.h"
-#include "pins.h"
+#include "lpc2378.hpp"
 #include "init.h"
 
 /*
@@ -105,75 +105,74 @@
 
 static void initPLL(void)
 {
-    /* [1] Check if PLL connected, disconnect if yes. */
+   /* [1] Check if PLL connected, disconnect if yes. */
 
-    if (VOLATILE32(PLLSTAT)&PLLSTAT_PLLC)
-    {
-        VOLATILE32(PLLCON) = PLLCON_PLLE;
-        /* Enable PLL, disconnected ( PLLC = 0)*/
-        VOLATILE32(PLLFEED) = 0xaa;
-        VOLATILE32(PLLFEED) = 0x55;
-    }
+   if (pll::stat::pllc::read())
+   {
+      pll::con::plle::write(1);
+      pll::feed::pllfeed::write(0xaa);
+      pll::feed::pllfeed::write(0x55);
+   }
 
-    /* [2] Disable the PLL once it has been disconnected. */
+   /* [2] Disable the PLL once it has been disconnected. */
 
-    VOLATILE32(PLLCON)  = 0;
-    VOLATILE32(PLLFEED) = 0xaa;
-    VOLATILE32(PLLFEED) = 0x55;
+   pll::con::both::write(0);
+   pll::feed::pllfeed::write(0xaa);
+   pll::feed::pllfeed::write(0x55);
 
-    /* Enable the main oscillator */
 
-    VOLATILE32(SCS) |= SCS_OSCEN;
+   /* Enable the main oscillator */
 
-    /* Wait until main OSC is usable */
+   scs::oscen::write(1);
 
-    do {} while ((VOLATILE32(SCS) & SCS_OSCSTAT) == 0);
+   /* Wait until main OSC is usable */
 
-    /* Select the main osc as the PLL clk source. */
+   do {} while (scs::oscstat::read() == 0);
 
-    VOLATILE32(CLKSRCSEL) = CLKSRC_MAIN_OSC;
+   /* Select the main osc as the PLL clk source. */
+   clksrcsel::clksrc::write(1);
 
-    /*
-     * NOTES:
-     *
-     * Set multiplier and divider values.
-     *
-     *  PLLCFG = ((N - 1) << 16) + (M - 1)
-     *
-     *  F_cco = (2 * M *F_in)/N
-     *      M = 12, N = 1, F_in = 12.000 MHz -> F_cco = 288.000 MHz
-     *
-     */
+   /*
+    * NOTES:
+    *
+    * Set multiplier and divider values.
+    *
+    *  PLLCFG = ((N - 1) << 16) + (M - 1)
+    *
+    *  F_cco = (2 * M *F_in)/N
+    *      M = 12, N = 1, F_in = 12.000 MHz -> F_cco = 288.000 MHz
+    *
+    */
+   pll::cfg::msel::write(PLLCFG_M - 1);
+   pll::cfg::nsel::write(PLLCFG_N - 1);
+   pll::feed::pllfeed::write(0xaa);
+   pll::feed::pllfeed::write(0x55);
     
-    VOLATILE32(PLLCFG) = PLLCFG_VALUE;
-    VOLATILE32(PLLFEED) = 0xAA;
-    VOLATILE32(PLLFEED) = 0x55;
+   /* Enable the PLL. */
+   pll::con::plle::write(1);
+   pll::feed::pllfeed::write(0xaa);
+   pll::feed::pllfeed::write(0x55);
     
-    /* Enable the PLL. */
+   /* Divide F_cco down to get the CCLK output. (288 / 6 = 48) */
+   cclkcfg::cclksel::write(CCLKCFG_VALUE);
     
-    VOLATILE32(PLLCON)  = PLLCON_PLLE;
-    VOLATILE32(PLLFEED) = 0xAA;
-    VOLATILE32(PLLFEED) = 0x55;
+   /* Wait for the PLL to lock to set frequency */
     
-    /* Divide F_cco down to get the CCLK output. (288 / 6 = 48) */
+   do {} while (pll::stat::plock::read() == 0);
+   do {} while (
+      pll::stat::msel::read() != PLLCFG_M - 1
+         &&
+      pll::stat::nsel::read() != PLLCFG_N - 1
+   );
     
-    VOLATILE32(CCLKCFG) = CCLKCFG_VALUE;
+   /* Enable and connect the PLL as the clock source */
+   pll::con::plle::write(1);
+   pll::con::pllc::write(1);
+   pll::feed::pllfeed::write(0xaa);
+   pll::feed::pllfeed::write(0x55);
     
-    /* Wait for the PLL to lock to set frequency */
-    
-    do {} while((VOLATILE32(PLLSTAT)&PLLSTAT_PLOCK)==0);
-    
-    do {} while((VOLATILE32(PLLSTAT)&0x00FF7FFF)!=PLLCFG_VALUE);
-    
-    /* Enable and connect the PLL as the clock source */
-    
-    VOLATILE32(PLLCON) = (PLLCON_PLLE | PLLCON_PLLC);
-    VOLATILE32(PLLFEED) = 0xAA;
-    VOLATILE32(PLLFEED) = 0x55;
-    
-    /* Check connect bit status and wait for connection. */
-    
-    do {} while((VOLATILE32(PLLSTAT)&PLLSTAT_PLLC)==0);
+   /* Check connect bit status and wait for connection. */
+   do {} while (pll::stat::pllc::read() == 0);
 }
 
 /*
@@ -299,32 +298,9 @@ static void initPCLK(void)
 
 void pinConfigurator(void)
 {
-    uint32_t n;
-    uint32_t i;
-    uint32_t pattern;
-
-    n=0;
-
-    while (mcuPins[n].pinSelect!=0)
-    {
-        pattern=0x00000000;
-
-        for (i=0; i<16; i++)
-        {
-            pattern|=(mcuPins[n].pin[i].multiplex<<(mcuPins[n].pin[i].position*2));
-        }
-
-        VOLATILE32(mcuPins[n].pinSelect)=pattern; /* set the complete world */
-        n ++;
-    }
-
-    /*
-     * NOTE:
-     *
-     * Complete by setting the ETM to be disabled on PINSEL10
-     *
-     */
-    VOLATILE32(PINSEL10) = ~(BIT(3)) & PINSEL10_MASK;   /* disable ETM, mask reserved bit to 0 */
+    pinsel<0>::port<2>::function::write(1);
+    pinsel<0>::port<3>::function::write(1);
+    pinsel<10>::port<1>::function::write(0);
 }
 
 /*
@@ -357,23 +333,7 @@ void pinConfigurator(void)
 static void initGPIO(void)
 {
     pinConfigurator();
-
-    /*
-     * Old method:
-     *
-     * VOLATILE32(U0_TX_PINSEL_REG) = (VOLATILE32(U0_TX_PINSEL_REG) & ~U0_TX_PINMASK ) | U0_TX_PINSEL;
-     * VOLATILE32(U0_RX_PINSEL_REG) = (VOLATILE32(U0_RX_PINSEL_REG) & ~U0_RX_PINMASK ) | U0_RX_PINSEL;
-     */
-
-    /*
-     * NOTE:
-     *
-     *  SCS controls whether the LPC2378 is set to use the legancy registers or the new
-     *  fast GPIO control registers.
-     *
-     */
-
-    VOLATILE32(SCS) |= BIT(0);  /* Fast GPIO / new registers */
+    scs::gpiom::write(1);
 }
 
 /*
