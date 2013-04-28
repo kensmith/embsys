@@ -155,11 +155,12 @@ struct uart0
    template <int rate>
    static void bps()
    {
-      static_assert(rate == 2400 || rate == 38400 || rate == 115200,
+      static_assert(rate == 38400 || rate == 115200,
          "unsupported baud rate");
 
       enum rate_t
       {
+         // TODO question CCLK as peripheral clock source
          value = 16 * CCLK / rate,
       };
 
