@@ -201,9 +201,9 @@ static void initPLL(void)
 
 static void initMAM(void)
 {
-    VOLATILE32(MAMCR)=MAMCR_OFF;
-    VOLATILE32(MAMTIM)=MAMTIM_3_CLK;
-    VOLATILE32(MAMCR)=MAMCR_PART;
+   mam::cr::mam_mode_control::write(0);
+   mam::tim::mam_fetch_cycle_timing::write(3);
+   mam::cr::mam_mode_control::write(1);
 }
 
 /*
@@ -232,41 +232,10 @@ static void initMAM(void)
 
 static void initPCLK(void)
 {
-    VOLATILE32(PCLKSEL0)=
-    (
-          SET_PCLK (PCLK_WDT,     PDIV_4)
-        | SET_PCLK (PCLK_TIMER0,  PDIV_4)
-        | SET_PCLK (PCLK_TIMER1,  PDIV_4)
-        | SET_PCLK (PCLK_UART0,   PDIV_1)
-        | SET_PCLK (PCLK_UART1,   PDIV_1)
-        | SET_PCLK (PCLK_PWM1,    PDIV_4)
-        | SET_PCLK (PCLK_I2C0,    PDIV_4)
-        | SET_PCLK (PCLK_SPI,     PDIV_4)
-        | SET_PCLK (PCLK_RTC,     PDIV_4)
-        | SET_PCLK (PCLK_SSP1,    PDIV_4)
-        | SET_PCLK (PCLK_DAC,     PDIV_4)
-        | SET_PCLK (PCLK_ADC,     PDIV_4)
-        | SET_PCLK (PCLK_CAN1,    PDIV_4)
-        | SET_PCLK (PCLK_CAN2,    PDIV_4)
-        | SET_PCLK (PCLK_ACF,     PDIV_4)
-    );
-
-    VOLATILE32(PCLKSEL1)=
-    (
-          SET_PCLK (PCLK_BAT_RAM, PDIV_4)
-        | SET_PCLK (PCLK_GPIO,    PDIV_4)
-        | SET_PCLK (PCLK_PCB,     PDIV_4)
-        | SET_PCLK (PCLK_I2C1,    PDIV_4)
-        | SET_PCLK (PCLK_SSP0,    PDIV_4)
-        | SET_PCLK (PCLK_TIMER2,  PDIV_4)
-        | SET_PCLK (PCLK_TIMER3,  PDIV_4)
-        | SET_PCLK (PCLK_UART2,   PDIV_1)
-        | SET_PCLK (PCLK_UART3,   PDIV_1)
-        | SET_PCLK (PCLK_I2C2,    PDIV_4)
-        | SET_PCLK (PCLK_I2S,     PDIV_4)
-        | SET_PCLK (PCLK_MCI,     PDIV_4)
-        | SET_PCLK (PCLK_SYSCON,  PDIV_4)
-    );
+   pclk::sel0::pclk_uart0::write(1);
+   pclk::sel0::pclk_uart1::write(1);
+   pclk::sel1::pclk_uart2::write(1);
+   pclk::sel1::pclk_uart3::write(1);
 }
 
 /*
