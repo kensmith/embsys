@@ -110,7 +110,7 @@ void led(led_states_t state)
 
 int main(void)
 {
-	volatile uint32_t p;
+    volatile uint32_t p;
 	
     /* initialize */
     initHardware();
