@@ -161,7 +161,7 @@ struct uart0
       enum rate_t
       {
          // TODO question CCLK as peripheral clock source
-         value = 288000000 / rate * 16,
+         value = 48000000 / rate * 16,
       };
 
       static_assert(0 <= rate_t::value && rate_t::value <= 65535,

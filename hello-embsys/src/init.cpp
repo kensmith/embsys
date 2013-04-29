@@ -155,7 +155,7 @@ static void initPLL(void)
    pll::feed::pllfeed::write(0x55);
     
    /* Divide F_cco down to get the CCLK output. (288 / 6 = 48) */
-   cclkcfg::cclksel::write(6);
+   cclkcfg::cclksel::write(6-1);
     
    /* Wait for the PLL to lock to set frequency */
     

@@ -36,7 +36,7 @@
 #include <stdint.h>
 #include "lpc2378.hpp"
 #include "init.h"
-#include "print.h"
+#include "led.hpp"
 //#include "uarts.h"
 
 /*=========================================================================*/
@@ -89,55 +89,27 @@
  *
  */
 
-enum led_states_t
+namespace
 {
-   on,
-   off
-};
-
-void led(led_states_t state)
-{
-   switch (state)
+   void wait()
    {
-      case led_states_t::on:
-         fio::set::led1::write(1);
-         break;
-      case led_states_t::off:
-         fio::clr::led1::write(1);
-         break;
+       volatile uint32_t p = 0x100000;
+       while (p--);
    }
 }
 
 int main(void)
 {
-    volatile uint32_t p;
-	
-    /* initialize */
     initHardware();
     
-    //printString("\033[2J"); /* Clear entire screen */
-    printString("Olimex LPC-2378-STK... alive!!!\n");
-    
-    //sprintf(string, "sprintf works!\n");
-    //printString(string);
-
     while (1)
     {
-        /* Turn MCIPWR SD LED On */
-        led(led_states_t::on);
-        
-        printString("University of Washington - UART Test Application \n");
-        for (p = 0; p < 0x100000; p++ );        // wait
-
-        // IMPORTANT: String formatting drags in tons of other library code
-        //  sprintf(string, "\n.%u", p);
-        //  printString(string);
-        
-        /* Turn MCIPWR SD LED Off */
-        led(led_states_t::off);
-        for (p = 0; p < 0x100000; p++ );        // wait
+        led_on();
+        wait();
+        led_off();
+        wait();
     }
-    /* never terminates, but put this here to make compiler happy ... */
-    return(0);
+
+    return 0;
 }
 /*** EOF ***/
