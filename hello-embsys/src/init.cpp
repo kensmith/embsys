@@ -106,18 +106,18 @@ static void initPLL(void)
 {
    /* [1] Check if PLL connected, disconnect if yes. */
 
-   if (pll::stat::pllc::read())
+   if (pllstat::pllc::read())
    {
-      pll::con::plle::write(1);
-      pll::feed::pllfeed::write(0xaa);
-      pll::feed::pllfeed::write(0x55);
+      pllcon::plle::write(1);
+      pllfeed::write(0xaa);
+      pllfeed::write(0x55);
    }
 
    /* [2] Disable the PLL once it has been disconnected. */
 
-   pll::con::both::write(0);
-   pll::feed::pllfeed::write(0xaa);
-   pll::feed::pllfeed::write(0x55);
+   pllcon::both::write(0);
+   pllfeed::write(0xaa);
+   pllfeed::write(0x55);
 
 
    /* Enable the main oscillator */
@@ -144,36 +144,36 @@ static void initPLL(void)
     */
    static const int M = 12;
    static const int N = 1;
-   pll::cfg::msel::write(M - 1);
-   pll::cfg::nsel::write(N - 1);
-   pll::feed::pllfeed::write(0xaa);
-   pll::feed::pllfeed::write(0x55);
+   pllcfg::msel::write(M - 1);
+   pllcfg::nsel::write(N - 1);
+   pllfeed::write(0xaa);
+   pllfeed::write(0x55);
     
    /* Enable the PLL. */
-   pll::con::plle::write(1);
-   pll::feed::pllfeed::write(0xaa);
-   pll::feed::pllfeed::write(0x55);
+   pllcon::plle::write(1);
+   pllfeed::write(0xaa);
+   pllfeed::write(0x55);
     
    /* Divide F_cco down to get the CCLK output. (288 / 6 = 48) */
    cclkcfg::cclksel::write(6-1);
     
    /* Wait for the PLL to lock to set frequency */
     
-   do {} while (pll::stat::plock::read() == 0);
+   do {} while (pllstat::plock::read() == 0);
    do {} while (
-      pll::stat::msel::read() != M - 1
+      pllstat::msel::read() != M - 1
          &&
-      pll::stat::nsel::read() != N - 1
+      pllstat::nsel::read() != N - 1
    );
     
    /* Enable and connect the PLL as the clock source */
-   pll::con::plle::write(1);
-   pll::con::pllc::write(1);
-   pll::feed::pllfeed::write(0xaa);
-   pll::feed::pllfeed::write(0x55);
+   pllcon::plle::write(1);
+   pllcon::pllc::write(1);
+   pllfeed::write(0xaa);
+   pllfeed::write(0x55);
     
    /* Check connect bit status and wait for connection. */
-   do {} while (pll::stat::pllc::read() == 0);
+   do {} while (pllstat::pllc::read() == 0);
 }
 
 /*
@@ -202,9 +202,9 @@ static void initPLL(void)
 
 static void initMAM(void)
 {
-   mam::cr::mam_mode_control::write(0);
-   mam::tim::mam_fetch_cycle_timing::write(3);
-   mam::cr::mam_mode_control::write(1);
+   mamcr::mam_mode_control::write(0);
+   mamtim::mam_fetch_cycle_timing::write(3);
+   mamcr::mam_mode_control::write(1);
 }
 
 /*
@@ -233,10 +233,10 @@ static void initMAM(void)
 
 static void initPCLK(void)
 {
-   pclk::sel0::pclk_uart0::write(1);
-   pclk::sel0::pclk_uart1::write(1);
-   pclk::sel1::pclk_uart2::write(1);
-   pclk::sel1::pclk_uart3::write(1);
+   pclksel0::pclk_uart0::write(1);
+   pclksel0::pclk_uart1::write(1);
+   pclksel1::pclk_uart2::write(1);
+   pclksel1::pclk_uart3::write(1);
 }
 
 /*
@@ -317,8 +317,8 @@ void initHardware(void)
     uart0::fcr::fifo_enable::write(0);
     
     /* Turn off MCIPWR SD LED (near bottom left corner of LCD) */
-    fio::dir::led1::write(1);
-    fio::clr::led1::write(1);
+    fiodir::led1::write(1);
+    fioclr::led1::write(1);
     
     /* MEMMAP Choices are:
     BOOTLOADERMODE      0x00

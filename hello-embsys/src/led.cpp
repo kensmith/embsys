@@ -4,17 +4,17 @@
 
 void new_led_on()
 {
-   fio::set::led1::write(1);
-}
-
-void new_led_off()
-{
-   fio::clr::led1::write(1);
+   fioset::led1::write(1);
 }
 
 void classic_led_on()
 {
    VOLATILE32(FIO0SET) |= 1<<21;
+}
+
+void new_led_off()
+{
+   fioclr::led1::write(1);
 }
 
 void classic_led_off()
