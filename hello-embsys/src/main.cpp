@@ -115,7 +115,7 @@ int main(void)
     /* initialize */
     initHardware();
     
-    printString("\033[2J"); /* Clear entire screen */
+    //printString("\033[2J"); /* Clear entire screen */
     printString("Olimex LPC-2378-STK... alive!!!\n");
     
     //sprintf(string, "sprintf works!\n");

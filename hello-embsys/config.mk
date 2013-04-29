@@ -1,5 +1,5 @@
 debug := -g
-opt := -Os
+opt := -O0
 toolchain := arm-none-eabi
 show :=
 MAKEFLAGS := j4
