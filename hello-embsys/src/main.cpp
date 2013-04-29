@@ -104,9 +104,9 @@ int main(void)
     
     while (1)
     {
-        led_on();
+        new_led_on();
         wait();
-        led_off();
+        new_led_off();
         wait();
     }
 
