@@ -37,6 +37,7 @@
 #include "lpc2378.hpp"
 #include "init.h"
 #include "led.hpp"
+#include "print.h"
 //#include "uarts.h"
 
 /*=========================================================================*/
@@ -104,6 +105,7 @@ int main(void)
     
     while (1)
     {
+        printString("yo\r\n");
         new_led_on();
         wait();
         new_led_off();

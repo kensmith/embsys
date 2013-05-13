@@ -313,8 +313,8 @@ void initHardware(void)
     initGPIO();
     
     /* intialize specific hardware components for UART0 */
-    uart0::bps<115200>();
-    uart0::fcr::fifo_enable::write(0);
+    uart1::bps<115200>();
+    uart1::fcr::fifo_enable::write(0);
     
     /* Turn off MCIPWR SD LED (near bottom left corner of LCD) */
     fiodir::led1::write(1);

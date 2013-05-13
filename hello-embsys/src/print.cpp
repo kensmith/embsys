@@ -113,11 +113,11 @@ void printString(const char *ptr)
 
    while (*ptr)
    {
-      while (!uart0::lsr::thre::read())
+      while (!uart1::lsr::thre::read())
       {
          // chill
       }
-      uart0::thr::byte::write(static_cast<uint8_t>(*ptr));
+      uart1::thr::byte::write(static_cast<uint8_t>(*ptr));
       ++ptr;
    }
 }
