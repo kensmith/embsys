@@ -437,11 +437,11 @@ in the policy classes, you don't have to do it again
 .VERBON 22 14 MT
 Original paper at
 .bold http://yogiken.wordpress.com/2010/02/10/on-publishing/
-.bold http://yogiken.files.wordpress.com/2010/02/c-register-access.pdf
 
+Code and Slides at
+.bold https://github.com/kensmith/embsys
 
 .bold References:
-
 Alexandrescu, 2001. Andrei Alexandrescu, Modern C++ Design,
 Addison-Wesley
 
