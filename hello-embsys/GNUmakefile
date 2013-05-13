@@ -58,7 +58,7 @@ $(strip\
   -mthumb\
   -c\
   $(debug)\
-  $(opt)\
+  $($(1)-$(opt))\
   -mcpu=arm7tdmi\
   -mthumb-interwork\
   -fomit-frame-pointer\
@@ -81,7 +81,7 @@ $(strip\
   -mthumb\
   -c\
   $(debug)\
-  $(opt)\
+  $($(1)-$(opt))\
   -mcpu=arm7tdmi\
   -mthumb-interwork\
   -fomit-frame-pointer\
