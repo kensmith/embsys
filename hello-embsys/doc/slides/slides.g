@@ -395,7 +395,7 @@ The compiler collapses and inlines the static function calls
 .LE
 .delete
 
-.new "Limitations" 2.5i
+.new "Limitations" 1.75i
 .BL
 .LI
 Pushback from collaboraters unused to the technique
@@ -409,6 +409,15 @@ read-write registers
 One read-modify-write per field
 rather than per register unless you develop the idea
 mentioned in "Other possibilities"
+.LE
+.LI
+Very different unoptimized vs. optimized performance
+.BL
+.LI
+Code essentially needs to be optimized
+.LI
+Some uses cannot run unoptimized, eg. stack pointer
+initialization
 .LE
 .LE
 .delete
