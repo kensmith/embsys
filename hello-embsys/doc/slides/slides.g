@@ -1,3 +1,6 @@
+.\" Copyright Ken Smith, 2013.
+.\" gpresent 2.3 http://www.science.uva.nl/~bobd/useful/gpresent/
+.\" Typewrite Elite MT http://www.fonts.com/font/monotype/typewriter-elite
 .ft MT
 .bd MR 3
 
@@ -36,7 +39,7 @@ sacrificing performance
 
 Ken Smith
 
-kgsmith@uw.edu
+kgsmith@gmail.com
 .DE
 .delete
 
