@@ -27,7 +27,7 @@ but none of them are as essential as these.
 The GUI can be a wonderful boon. It can also be an
 obfuscating crutch, hiding the actual goings-on behind
 cleverly drawn buttons and sliders. The things that are
-going on are often uncomplicated. With only a bit of
+going on are often uncomplicated. With a bit of
 memorization, you might find that you are more efficient on
 the command line. Regardless, it is useful to understand
 what is actually happening when you click a button in a GUI
