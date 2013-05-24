@@ -213,6 +213,11 @@ windows clipboard. In the github add key's dialog, middle
 click* in the text box to paste the key and submit. If what
 ends up in the text box doesn't look something like this,
 
+ssh-rsa AAAAB3Nza... user@machine
+
+then open the file with cat, nano, vim, etc., and see what it
+should look like.
+
 *If you don't have a middle click, then try this.
 
 cat ~/.ssh/id_rsa.pub
