@@ -429,4 +429,13 @@ March 2013. Our yagarto toolchain uses GCC 4.2.2 which was
 released in October 2007. Much has transpired in the past
 5.5 years. See the changelogs for details.
 
+Also, play with Virtual Box. Take snapshots. Revert.
+Suspend. Migrate the VM to another machine and see if it
+still works. Convert it to a virtual appliance and upload it
+to virtualboxes.org (scrubbing away any personal data like
+your ssh keys, of course). Virtual machines are the future
+of our industry. The cloud is based on them. If you are
+familiar with them, you'll be more capable in embedded
+engineering and in information technology in general.
+
 \# vim: textwidth=60 ft=groff:
