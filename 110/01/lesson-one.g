@@ -394,6 +394,11 @@ You should see something like this.
    Info : lpc2378.cpu: hardware has 2 breakpoint/watchpoint
    units
 
+Configure gdb to allow loading .gdbinit from the current
+working directory by adding this line to ~/.gdbinit
+
+   set auto-load safe-path .
+
 Back in the original window where you built the sample code,
 do this.
 
