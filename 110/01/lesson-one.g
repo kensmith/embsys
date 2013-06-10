@@ -121,34 +121,53 @@ read this.
 
 https://wiki.archlinux.org/index.php/Xfce
 
-Start xfce with startxfce4.
+Start xfce with startxfce4. If you want to autostart Xfce,
+see the "Starting Xfce" subsection of the Arch wiki on Xcfe.
+
+https://wiki.archlinux.org/index.php/Xfce#Automatically
 
 In addition to the packages the tutorial has you install,
 please also install these.
 
    - vim
-     - the world's best editor
+     - one of the preferred unix text editors
+     - alternatives include xemacs, emacs, and nano
    - screen
      - terminal multiplexing for the old-at-heart
    - tmux
      - terminal multiplexing for those who don't already use
        screen
    - zsh
-     - the world's best shell
+     - an alternative to bash based on ksh
    - git
-     - the world's best version control system
+     - a version control system
+     - alternatives include mercurial, subversion, and cvs
    - openssh
-     - the world's best remote shell
+     - remote shell based on RSH where all traffic is
+       encrypted
    - whois
      - check the identity of an IP or FQDN
    - xclip
      - commandline access to the clipboard
    - mpfr
+     - multiple-precision floating-point computations with
+       correct rounding
+     - needed to build gcc
    - mpc
+     - arithmetic of complex numbers with arbitrarily high
+       precision and correct rounding
+     - needed to build gcc
    - gmp
+     - free library for arbitrary precision arithmetic
+     - needed to build gcc
    - isl
+     - isl is a thread-safe C library for manipulating sets
+       and relations of integer points bounded by affine
+       constraints (whatever that means)
+     - needed to build gcc
    - cloog
-     - These five are required to build our cross compiler
+     - library to generate code for scanning Z-polyhedra
+     - needed to build gcc
    - wget
      - Used by the cross compiler build process
    - openocd
@@ -157,8 +176,12 @@ please also install these.
    - cgdb
      - You have to install this from "the AUR"
        (https://aur.archlinux.org/)
-       - Download the tarball
-       - cd Downloads
+       - Download the tarball to your home directory or
+         Downloads directory (or any subdirectory of your
+         home directory).
+       - cd <that directory>
+         - <that directory> is whatever directory you
+           downloaded the tarball to.
        - tar xzvf cgdb.tar.gz
        - cd cgdb
        - less PKGBUILD
@@ -173,6 +196,10 @@ please also install these.
 As usual, you just run this to install any of the above.
 
    pacman -S package
+
+Run this instead if you are not running as root.
+
+   sudo pacman -S package
 
 Replace 'package' with the name in the list. You can list
 them all on one command line if you want. That will give you
