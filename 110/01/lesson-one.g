@@ -87,10 +87,14 @@ I deviated from the instructions in a few ways. You might
 not have to but here are a few notes I took along the way to
 getting my environment set up.
 
+.subsubsection "syslinux-install_update"
+
 syslinux-install_update didn't accept the -a parameter which
 sets the boot flag of the first partition. I ran it with -i
 and -m only. Later in the process, he has you run sgdisk
 with the right flags to do what -a wouldn't do.
+
+.subsubsection "useradd"
 
 useradd -d didn't create my home directory for me. (I
 accidentally ran it once before I noticed the -d -- a
@@ -102,6 +106,8 @@ me".) I had to
 
 Where 'user' in my case is 'ken'.
 
+.subsubsection "sudo"
+
 I also commented in the comment section of the blog post but
 I encourage you not to directly edit /etc/sudoers. There is
 a program which checks your configuration before it commits
@@ -109,9 +115,52 @@ the changes to make sure you haven't broken your ability to
 sudo. This is especially important on distros like Ubuntu
 which don't have you set a root password by default and rely
 on the sudo mechanism for administrator level access to the
-machine. Do this, instead.
+machine. Do this as root, instead.
 
    EDITOR=/usr/bin/nano visudo
+
+Also, this tutorial requires passwordless sudo. The
+toolchain build installs things into /usr as it progresses
+and if you don't do passwordless sudo, you'll be prompted
+for a password numerous times during the build. This will
+time out and the build will fail without explanation. To
+enable passwordless sudo, look for these lines in the
+sudoers file.
+
+## Same thing without a password
+%wheel ALL=(ALL) NOPASSWD: ALL
+
+Make sure the line with NOPASSWD is uncommented (pound sign
+removed). Then, we must add ourselves to the wheel group.
+Still as root, do this.
+
+   EDITOR=/usr/bin/nano vigr
+
+Look for the line that begins with 'wheel' and add your user
+to the end, separated by a comma.
+
+wheel:x:10:root
+
+becomes
+
+wheel:x:10:root,user
+
+replacing 'user' with the username you set for yourself.
+After you save the file, vigr will suggest you mirror your
+changes to /etc/gshadow. Say yes and make the same changes
+to that file.
+
+Log out and log back in to officially become a member of the
+wheel group. Run this command to check.
+
+   groups
+
+You should see a list that contains 'wheel'.
+
+adm disk wheel uucp log network video audio optical storage
+scanner power users vboxusers
+
+.subsubsection "gnome or xfce"
 
 Rather than install Gnome, I installed xfce. It is lighter
 weight than Gnome and I prefer it. Use whichever you wish.
@@ -125,6 +174,8 @@ Start xfce with startxfce4. If you want to autostart Xfce,
 see the "Starting Xfce" subsection of the Arch wiki on Xcfe.
 
 https://wiki.archlinux.org/index.php/Xfce#Automatically
+
+.subsubsection "extra packages"
 
 In addition to the packages the tutorial has you install,
 please also install these.
